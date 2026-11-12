@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ex9 — Chat</title>
+  <style>
+    body { font: 18px system-ui, sans-serif; max-width: 700px; margin: 40px auto; padding: 0 16px; }
+    nav a { margin-right: 20px; }
+    #mensagens { height: 280px; overflow-y: auto; border: 1px solid #aaa; padding: 12px; margin: 18px 0; }
+    form { display: flex; flex-wrap: wrap; gap: 8px; }
+    input { padding: 8px; font: inherit; }
+    #nome { width: 140px; }
+    #texto { flex: 1; min-width: 180px; }
+    button { padding: 8px 16px; font: inherit; }
+  </style>
+</head>
+<body>
+  <nav><a href="/repete">Repete</a><a href="/chat">Chat</a></nav>
+  <h1>Chat da turma</h1>
+  <p>Abra esta página em duas abas e use nomes diferentes.</p>
+  <p id="estado">Conectando...</p>
+  <div id="mensagens" aria-live="polite"></div>
+  <form id="formulario">
+    <input id="nome" aria-label="Nome" placeholder="Seu nome" required maxlength="30">
+    <input id="texto" aria-label="Mensagem" placeholder="Sua mensagem" required maxlength="500">
+    <button id="enviar" disabled>Enviar</button>
+  </form>
+  <script>
+    // O navegador se conecta ao mesmo computador que entregou a página.
+    const protocolo = location.protocol === "https:" ? "wss:" : "ws:";
+    const ws = new WebSocket(`${protocolo}//${location.host}/ws/chat`);
+    const estado = document.querySelector("#estado");
+    const enviar = document.querySelector("#enviar");
+    const mensagens = document.querySelector("#mensagens");
+    const nome = document.querySelector("#nome");
+    const texto = document.querySelector("#texto");
+
+    ws.onopen = () => { estado.textContent = "Conectado"; enviar.disabled = false; };
+    ws.onclose = () => { estado.textContent = "Desconectado. Atualize a página."; enviar.disabled = true; };
+    ws.onmessage = (evento) => {
+      const dados = JSON.parse(evento.data);
+      const linha = document.createElement("p");
+      // textContent mostra o texto literalmente, inclusive se alguém digitar HTML.
+      linha.textContent = `${dados.nome}: ${dados.texto}`;
+      mensagens.append(linha);
+      mensagens.scrollTop = mensagens.scrollHeight;
+    };
+
+    document.querySelector("#formulario").addEventListener("submit", (evento) => {
+      evento.preventDefault();
+      if (ws.readyState !== WebSocket.OPEN) return;
+      ws.send(JSON.stringify({ nome: nome.value, texto: texto.value }));
+      texto.value = "";
+      texto.focus();
+    });
+  </script>
+</body>
+</html>

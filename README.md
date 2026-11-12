@@ -1,5 +1,7 @@
 # Exemplo de WebSocket em Python
 
+Uma versão simples para o Exercício 9, com eco e chat no mesmo servidor, está em [ex9](ex9/README.md).
+
 Exemplos simples de comunicação entre o navegador e um servidor via WebSocket, usando o
 microframework Tornado.
 

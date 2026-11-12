@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ex9 — Repete</title>
+  <style>
+    body { font: 18px system-ui, sans-serif; max-width: 700px; margin: 40px auto; padding: 0 16px; }
+    nav a { margin-right: 20px; }
+    #mensagens { min-height: 180px; border: 1px solid #aaa; padding: 12px; margin: 18px 0; }
+    form { display: flex; gap: 8px; }
+    input { flex: 1; padding: 8px; font: inherit; }
+    button { padding: 8px 16px; font: inherit; }
+  </style>
+</head>
+<body>
+  <nav><a href="/repete">Repete</a><a href="/chat">Chat</a></nav>
+  <h1>Servidor que repete</h1>
+  <p>Envie uma mensagem e veja a resposta do servidor.</p>
+  <p id="estado">Conectando...</p>
+  <div id="mensagens" aria-live="polite"></div>
+  <form id="formulario">
+    <input id="texto" aria-label="Mensagem" placeholder="Escreva uma mensagem" required maxlength="500">
+    <button id="enviar" disabled>Enviar</button>
+  </form>
+  <script>
+    // Usa o mesmo endereço da página: funciona em localhost e no IP do colega.
+    const protocolo = location.protocol === "https:" ? "wss:" : "ws:";
+    const ws = new WebSocket(`${protocolo}//${location.host}/ws/repete`);
+    const estado = document.querySelector("#estado");
+    const enviar = document.querySelector("#enviar");
+    const mensagens = document.querySelector("#mensagens");
+    const texto = document.querySelector("#texto");
+
+    function mostrar(conteudo) {
+      const linha = document.createElement("p");
+      linha.textContent = conteudo;
+      mensagens.append(linha);
+    }
+
+    ws.onopen = () => { estado.textContent = "Conectado"; enviar.disabled = false; };
+    ws.onclose = () => { estado.textContent = "Desconectado. Atualize a página."; enviar.disabled = true; };
+    ws.onmessage = (evento) => mostrar(evento.data);
+
+    document.querySelector("#formulario").addEventListener("submit", (evento) => {
+      evento.preventDefault();
+      if (ws.readyState !== WebSocket.OPEN) return;
+      mostrar(`Você disse: ${texto.value}`);
+      ws.send(texto.value);
+      texto.value = "";
+      texto.focus();
+    });
+  </script>
+</body>
+</html>
