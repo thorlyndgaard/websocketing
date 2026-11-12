@@ -25,10 +25,8 @@ Para o teste com colegas na mesma rede, o aluno que executa o servidor descobre 
 - Em `/ws/chat`, o servidor mantém um conjunto de conexões abertas. Quando chega uma mensagem, envia para todas elas. As últimas 50 mensagens ficam na memória para novas abas.
 - O JavaScript abre a conexão usando o endereço da própria página, envia mensagens sem recarregar e exibe o que chega. A página do chat usa `textContent` para tratar as mensagens como texto.
 
-## Resultados para descrever no relatório
+## Resultados 
 
 1. **Repete:** ao enviar `Olá`, a página mostra `Você disse: Olá` e depois `Servidor repete: Olá`. Outra aba não recebe essa resposta.
 2. **Chat em duas abas:** uma mensagem enviada por uma aba aparece nas duas. Uma terceira aba recebe as últimas mensagens ao entrar.
 3. **Chat com a turma:** descreva o teste real depois de executá-lo com os colegas, incluindo quais máquinas se conectaram e se as mensagens chegaram a todos.
-
-O enunciado pede capturas de tela e um PDF chamado `Ex9_NomeAluno_BDD.pdf`. Tire uma captura da página Repete após uma mensagem e outra das duas abas do Chat após a troca de mensagens. Inclua o código comentado, a explicação e os resultados no PDF. O teste com colegas precisa ser realizado presencialmente ou na mesma rede; não há como confirmar esse resultado apenas executando o servidor nesta máquina.
